@@ -111,17 +111,17 @@ public class Thyrosim implements FirstOrderDifferentialEquations
         double q4F, q1F, SR3, SR4, fCIRC, SRTSH, fdegTSH, fLAG, f4, NL;
 
 // scale compartment sizes. in thyrosimIM compartment sizes were all 1. why?
-double p68 = 1; // PV_ratio scalar
-double p73 = 1; // slow_scale scalar
-double p74 = 1; // fast_scale scalar
+double p69 = 1; // PV_ratio scalar
+double p74 = 1; // slow_scale scalar
+double p75 = 1; // fast_scale scalar
 
-double q1 = q[0] * 1 / p68;   //   scale t4 by 1/PV ratio
-double q2 = q[1] * 1 / p74;   //   scale t4fast pool by 1/fast scale
-double q3 = q[2] * 1 / p73;   //   scale t4slow pool by 1/slow scale
-double q4 = q[3] * 1 / p68;   //   scale t3 plasma by 1/PV ratio
-double q5 = q[4] * 1 / p74;   //   scale t3fast pool by 1/fast scale
-double q6 = q[5] * 1 / p73;   //   scale t3slow pool by 1/slow scale
-double q7 = q[6] * 1 / p68;   //   scale TSH plasma by 1/PV ratio
+double q1 = q[0] * 1 / p69;   //   scale t4 by 1/PV ratio
+double q2 = q[1] * 1 / p75;   //   scale t4fast pool by 1/fast scale
+double q3 = q[2] * 1 / p74;   //   scale t4slow pool by 1/slow scale
+double q4 = q[3] * 1 / p69;   //   scale t3 plasma by 1/PV ratio
+double q5 = q[4] * 1 / p75;   //   scale t3fast pool by 1/fast scale
+double q6 = q[5] * 1 / p74;   //   scale t3slow pool by 1/slow scale
+double q7 = q[6] * 1 / p69;   //   scale TSH plasma by 1/PV ratio
 
 // VARIABLES VINH INSERTING DURING CONVERSION PROCESS
 // may already exist in code somewhere, must ask later
@@ -133,19 +133,17 @@ double p53 = 8.4983; // K_f4          umol
 double p54 = 14.366; // l_hillf3      scalar (hill exponent)
 
 // Auxillary equations
-q1F = (p7 +p8 *q[0]+p9 *Math.pow(q[0],2)+p10*Math.pow(q[0],3))*q[0]; // FT4p
-q4F = (p24+p25*q[0]+p26*Math.pow(q[0],2)+p27*Math.pow(q[0],3))*q[3]; // FT3p
-SR3 = (p19*q[18])*d3; // Brain delay
-SR4 = (p1 *q[18])*d1; // Brain delay
-// fCIRC = 1+(p32/(p31*Math.exp(-q[8]))-1)*(1/(1+Math.exp(10*q[8]-55))); // VERY DIFFERENT, WILL OVERHAUL
+q4F = (p24 + p25 * q1 + p26 * Math.pow(q1,2) + p27 * Math.pow(q1,3)) * q4; // FT3p
+q1F = (p7 + p8 * q1 + p9 * Math.pow(q1,2) + p10 * Math.pow(q1,3)) * q1; // FT4p
+SR3 = (p19 * q[18]) * d3; // Brain delay
+SR4 = (p1 * q[18]) * d1; // Brain delay
 fCIRC = Math.pow(q[8], p51) / (Math.pow(q[8], p51) + Math.pow(p49, p51));
-// SRTSH = (p30+p31*fCIRC*Math.sin(Math.PI/12*t-p33))*Math.exp(-q[8]); // VERY DIFFERENT, WILL OVERHAUL
-SRTSH = (p30 + p31 * fCIRC * Math.sin(2 * Math.PI * t - p33)) * (Math.pow(p50, p52) + Math.pow(q[8], p52));
-fdegTSH = p34+p35/(p36+q[6]);
-fLAG = p41+2*Math.pow(q[7],11)/(Math.pow(p42,11)+Math.pow(q[7],11));
+SRTSH = (p30 + p31 * fCIRC * Math.sin(((Math.PI * t) / 12) - p33)) * (Math.pow(p50, p52) / (Math.pow(p50, p52) + Math.pow(q[8], p52)));
+fdegTSH = p34+p35/(p36+q7);
+fLAG = p41 + 2 * Math.pow(q[7],11)/(Math.pow(p42,11)+Math.pow(q[7],11));
 // f4 = p37+5*p37/(1+Math.exp(2*q[7]-7)); // VERY DIFF, WILL OVERHAUL
 f4 = p37 * (1 + 5 * (Math.pow(p53, p54)) / (Math.pow(p53, p54) + Math.pow(q[7], p54)));
-NL = p13/(p14+q[1]);
+NL = p13/(p14+q2);
 
 // ODEs
 //double plasma_volume_ratio = 1; // PV_ratio scalar
@@ -154,28 +152,28 @@ NL = p13/(p14+q[1]);
 double p57 = d1; //dial[1]
 double p59 = d3; //dial[3]
 // missing p[80] as this was removed (for thyroSOLVER) (p[80] = ivT4 dose)
-qDot[0] = (SR4 + p2 * q2 + p3 * q3 - (p4 + p5) * q1F) * p68 + p10 * q[10];  // T4dot (need to remove u1) unmod
-qDot[1] = (p5 * q1F - (p2 + p11 + NL) * q2) * p74;  // T4fast   unmod                           // T4fast
-qDot[2] = (p4 * q1F - (p3 + p14 / (p15 + q3) + p16 / (p17 + q3)) * q3) * p73;  // T4slow  unmod
+qDot[0] = (SR4 + p3 * q2 + p4 * q3 - (p5 + p6) * q1F) * p69 + p11 * q[10];  // T4dot (need to remove u1) unmod
+qDot[1] = (p6 * q1F - (p3 + p12 + NL) * q2) * p75;  // T4fast   unmod                           // T4fast
+qDot[2] = (p5 * q1F - (p4 + p15 / (p16 + q3) + p17 / (p18 + q3)) * q3) * p74;  // T4slow  unmod
 // missing p[81] as this was removed for thyroSOLVER (p[81] = ivT3 dose)
-qDot[3] = (SR3 + p19 * q5 + p20 * q6 - (p21 + p22) * q4F) * p68 + p27 * q[12];  // T3pdot unmod
-qDot[4] = (p22 * q4F + NL * q2 - (p19 + p28) * q5) * p74;  // T3fast  unmod
-qDot[5] = (p21 * q4F + p14 * q3 / (p15 + q3) + p16 * q3 / (p17 + q3) - (p20) * q6) * slow_volume_ratio;  // T3slow    unmod
-qDot[6] = (SRTSH - fdegTSH * q7) * p68;  // TSHp    unmod          
-qDot[7] = f4 / p37 * q1 + p36 / p38 * q4 - p39 * q[7];  // T3B    unmod
+qDot[3] = (SR3 + p20 * q5 + p21 * q6 - (p22 + p23) * q4F) * p69 + p28 * q[12];  // T3pdot unmod
+qDot[4] = (p23 * q4F + NL * q2 - (p20 + p29) * q5) * p75;  // T3fast  unmod
+qDot[5] = (p22 * q4F + p15 * q3 / (p16 + q3) + p17 * q3 / (p18 + q3) - (p21) * q6) * slow_volume_ratio;  // T3slow    unmod
+qDot[6] = (SRTSH - fdegTSH * q7) * p69;  // TSHp    unmod          
+qDot[7] = f4 / p38 * q1 + p37 / p39 * q4 - p40 * q[7];  // T3B    unmod
 qDot[8] = fLAG * (q[7] - q[8]);  // T3B LAG   unmod
-qDot[9] = -p42 * q[9];  // T4PILLdot    unmod
-qDot[10]=  p42 * q[9] - (p43 * p57 + p10) * q[10];  // T4GUTdot: note p[43] * p[57] = p[43] * dial[1] = k4excrete   unmod
-qDot[11]= -p44 * q[11];  // T3PILLdot  unmod
-qDot[12]= (p44*q[11]-(p45*p59 + p27)*q[12]); //T3GUTdot: note p[45] * p[59] = p[45] * dial[3] = k3excrete  unmod
+qDot[9] = -p43 * q[9];  // T4PILLdot    unmod
+qDot[10]=  p43 * q[9] - (p44 * d2 + p11) * q[10];  // T4GUTdot: note p[43] * p[57] = p[43] * dial[1] = k4excrete   unmod
+qDot[11]= -p45 * q[11];  // T3PILLdot  unmod
+qDot[12]= (p45 * q[11] - (p46 * d4 + p28) * q[12]); //T3GUTdot: note p[45] * p[59] = p[45] * dial[3] = k3excrete  unmod
 
 // Delay ODEs
 qDot[13] = (q7) - kdelay*q[13];                              // delay1
-qDot[14] = kdelay*(q[13] -q[14]);                                  // delay2
-qDot[15] = kdelay*(q[14] -q[15]);                                  // delay3
-qDot[16] = kdelay*(q[15] -q[16]);                                  // delay4
-qDot[17] = kdelay*(q[16] -q[17]);                                  // delay5
-qDot[18] = kdelay*(q[17] -q[18]);                                  // delay6
+qDot[14] = kdelay*(q[13] - q[14]);                                  // delay2
+qDot[15] = kdelay*(q[14] - q[15]);                                  // delay3
+qDot[16] = kdelay*(q[15] - q[16]);                                  // delay4
+qDot[17] = kdelay*(q[16] - q[17]);                                  // delay5
+qDot[18] = kdelay*(q[17] - q[18]);                                  // delay6
     
     }
     public static void main(String[] args)
