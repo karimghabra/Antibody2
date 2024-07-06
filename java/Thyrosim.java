@@ -115,13 +115,17 @@ double p69 = 1; // PV_ratio scalar
 double p74 = 1; // slow_scale scalar
 double p75 = 1; // fast_scale scalar
 
-double q1 = q[0] * 1 / p69;   //   scale t4 by 1/PV ratio
-double q2 = q[1] * 1 / p75;   //   scale t4fast pool by 1/fast scale
-double q3 = q[2] * 1 / p74;   //   scale t4slow pool by 1/slow scale
-double q4 = q[3] * 1 / p69;   //   scale t3 plasma by 1/PV ratio
-double q5 = q[4] * 1 / p75;   //   scale t3fast pool by 1/fast scale
-double q6 = q[5] * 1 / p74;   //   scale t3slow pool by 1/slow scale
-double q7 = q[6] * 1 / p69;   //   scale TSH plasma by 1/PV ratio
+double recScalar69 = 1 / p69;
+double recScalar74 = 1 / p74;
+double recScalar75 = 1 / p75;
+
+double q1 = q[0] * recScalar69;   //   scale t4 by 1/PV ratio
+double q2 = q[1] * recScalar75;   //   scale t4fast pool by 1/fast scale
+double q3 = q[2] * recScalar74;   //   scale t4slow pool by 1/slow scale
+double q4 = q[3] * recScalar69;   //   scale t3 plasma by 1/PV ratio
+double q5 = q[4] * recScalar75;   //   scale t3fast pool by 1/fast scale
+double q6 = q[5] * recScalar74;   //   scale t3slow pool by 1/slow scale
+double q7 = q[6] * recScalar69;   //   scale TSH plasma by 1/PV ratio
 
 // VARIABLES VINH INSERTING DURING CONVERSION PROCESS
 // may already exist in code somewhere, must ask later
@@ -133,16 +137,24 @@ double p53 = 8.4983; // K_f4          umol
 double p54 = 14.366; // l_hillf3      scalar (hill exponent)
 
 // Auxillary equations
-q4F = (p24 + p25 * q1 + p26 * Math.pow(q1,2) + p27 * Math.pow(q1,3)) * q4; // FT3p
-q1F = (p7 + p8 * q1 + p9 * Math.pow(q1,2) + p10 * Math.pow(q1,3)) * q1; // FT4p
+// speed up due to repetition
+double q1Squared = Math.pow(q1, 2);
+double q1Cubed = Math.pow(q1, 3);
+double T3Blagtonhilleire = Math.pow(q[8], p51);
+double KSR_tshmhillTSH = Math.pow(p50, p52);
+double TwoT3B11 = Math.pow(q[7], 11);
+double Kf4lhillf3 = Math.pow(p53, p54);
+
+q4F = (p24 + p25 * q1 + p26 * q1Squared + p27 * q1Cubed) * q4; // FT3p
+q1F = (p7 + p8 * q1 + p9 * q1Squared + p10 * q1Cubed) * q1; // FT4p
 SR3 = (p19 * q[18]) * d3; // Brain delay
 SR4 = (p1 * q[18]) * d1; // Brain delay
-fCIRC = Math.pow(q[8], p51) / (Math.pow(q[8], p51) + Math.pow(p49, p51));
-SRTSH = (p30 + p31 * fCIRC * Math.sin(((Math.PI * t) / 12) - p33)) * (Math.pow(p50, p52) / (Math.pow(p50, p52) + Math.pow(q[8], p52)));
-fdegTSH = p34+p35/(p36+q7);
-fLAG = p41 + 2 * Math.pow(q[7],11)/(Math.pow(p42,11)+Math.pow(q[7],11));
+fCIRC = T3Blagtonhilleire / ((T3Blagtonhilleire + Math.pow(p49, p51)));
+SRTSH = (p30 + p31 * fCIRC * Math.sin(((Math.PI * t) / 12) - p33)) * (KSR_tshmhillTSH / (KSR_tshmhillTSH + Math.pow(q[8], p52)));
+fdegTSH = p34 + p35/(p36 + q7);
+fLAG = p41 + 2 * TwoT3B11/(Math.pow(p42,11) + TwoT3B11);
 // f4 = p37+5*p37/(1+Math.exp(2*q[7]-7)); // VERY DIFF, WILL OVERHAUL
-f4 = p37 * (1 + 5 * (Math.pow(p53, p54)) / (Math.pow(p53, p54) + Math.pow(q[7], p54)));
+f4 = p37 * (1 + 5 * (Kf4lhillf3) / (Kf4lhillf3 + Math.pow(q[7], p54)));
 NL = p13/(p14+q2);
 
 // ODEs
@@ -162,13 +174,15 @@ qDot[5] = (p22 * q4F + p15 * q3 / (p16 + q3) + p17 * q3 / (p18 + q3) - (p21) * q
 qDot[6] = (SRTSH - fdegTSH * q7) * p69;  // TSHp    unmod          
 qDot[7] = f4 / p38 * q1 + p37 / p39 * q4 - p40 * q[7];  // T3B    unmod
 qDot[8] = fLAG * (q[7] - q[8]);  // T3B LAG   unmod
-qDot[9] = -p43 * q[9];  // T4PILLdot    unmod
-qDot[10]=  p43 * q[9] - (p44 * d2 + p11) * q[10];  // T4GUTdot: note p[43] * p[57] = p[43] * dial[1] = k4excrete   unmod
-qDot[11]= -p45 * q[11];  // T3PILLdot  unmod
-qDot[12]= (p45 * q[11] - (p46 * d4 + p28) * q[12]); //T3GUTdot: note p[45] * p[59] = p[45] * dial[3] = k3excrete  unmod
+double p43ofq9 = p43 * q[9];
+double p45qof11 = p45 * q[11];
+qDot[9] = -p43ofq9;  // T4PILLdot    unmod
+qDot[10]=  p43ofq9 - (p44 * d2 + p11) * q[10];  // T4GUTdot: note p[43] * p[57] = p[43] * dial[1] = k4excrete   unmod
+qDot[11]= -p45qof11;  // T3PILLdot  unmod
+qDot[12]= (p45qof11 - (p46 * d4 + p28) * q[12]); //T3GUTdot: note p[45] * p[59] = p[45] * dial[3] = k3excrete  unmod
 
 // Delay ODEs
-qDot[13] = (q7) - kdelay*q[13];                              // delay1
+qDot[13] = (q7) - kdelay * q[13];                              // delay1
 qDot[14] = kdelay*(q[13] - q[14]);                                  // delay2
 qDot[15] = kdelay*(q[14] - q[15]);                                  // delay3
 qDot[16] = kdelay*(q[15] - q[16]);                                  // delay4
