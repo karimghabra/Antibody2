@@ -21,6 +21,8 @@ public class Thyrosim implements FirstOrderDifferentialEquations
     private double p41, p42, p43, p44, p45, p46, p47, p48;
     private double kdelay, u1, u4, d1, d2, d3, d4;
 
+    private Plotter t4_plotter, t3_plotter, tsh_plotter;
+
     // Functions that Java ODE solver needs
     // Declare parameters
     public Thyrosim(double dial1, double dial2, double dial3, double dial4,
@@ -99,6 +101,10 @@ public class Thyrosim implements FirstOrderDifferentialEquations
         // Post param load modification
         p44 = p44 * d2;
         p46 = p46 * d4;
+
+        t4_plotter = new Plotter();
+        t3_plotter = new Plotter();
+        tsh_plotter = new Plotter();
     }
 
     public int getDimension()
@@ -189,7 +195,21 @@ qDot[16] = kdelay*(q[15] - q[16]);                                  // delay4
 qDot[17] = kdelay*(q[16] - q[17]);                                  // delay5
 qDot[18] = kdelay*(q[17] - q[18]);                                  // delay6
     
+t4_plotter.add_value(t, qDot[0]);
+t3_plotter.add_value(t, qDot[3]);
+tsh_plotter.add_value(t, qDot[6]);
+
     }
+
+    public void plot_all(){
+        // Very iffy about this code
+        // IAN PLEASE TELL ME HOW TO DEAL WITH PLOT OUTPUT
+
+        t4_plotter.plot();
+        t3_plotter.plot();
+        tsh_plotter.plot();
+    }
+
     public static void main(String[] args)
     {
         // Parse input arguments
