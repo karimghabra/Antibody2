@@ -1,0 +1,1 @@
+Press "Ctrl + Shift + P", choose "java : Clean java Language Server workspace".
