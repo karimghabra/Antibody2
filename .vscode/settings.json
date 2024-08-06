@@ -1,0 +1,4 @@
+{
+    "java.configuration.updateBuildConfiguration": "interactive"
+    //"java.project.referencedLibraries": ["lib/commons-math3-3.6.1.jar"]
+}
