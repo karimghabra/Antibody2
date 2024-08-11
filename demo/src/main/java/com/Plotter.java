@@ -15,24 +15,24 @@ public class Plotter {
     private ChartPanel chartPanel;
     private XYSeries series;
 
-    public Plotter(String s) {
+    public Plotter(String name, String x, String y) {
         dataset = new XYSeriesCollection();
         chart = ChartFactory.createXYLineChart(
-                "Thyrosim Simulation", // chart title
-                "Time", // x axis label
-                "Values", // y axis label
+                name, // chart title
+                x, // x axis label
+                y, // y axis label
                 dataset // data
         );
 
         chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new Dimension(800, 600));
-        JFrame frame = new JFrame(s);
+        JFrame frame = new JFrame(name);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setContentPane(chartPanel);
         frame.pack();
         frame.setVisible(true);
 
-        series = new XYSeries("values");
+        series = new XYSeries(y);
     }
 
     public void add_value(double time, double value){

@@ -102,9 +102,9 @@ public class Thyrosim implements FirstOrderDifferentialEquations
         p44 = p44 * d2;
         p46 = p46 * d4;
 
-        t4_plotter = new Plotter("t4");
-        t3_plotter = new Plotter("t3");
-        tsh_plotter = new Plotter("tsh");
+        t4_plotter = new Plotter("T4", "hours", "micrograms/L");
+        t3_plotter = new Plotter("T3", "hours", "micrograms/L");
+        tsh_plotter = new Plotter("TSH", "hours", "milliunits/L");
     }
 
     public int getDimension()
@@ -114,7 +114,8 @@ public class Thyrosim implements FirstOrderDifferentialEquations
 
     public void computeDerivatives(double t, double[] q, double[] qDot)
     {
-        double q4F, q1F, SR3, SR4, fCIRC, SRTSH, fdegTSH, fLAG, f4, NL;
+        
+        /*double q4F, q1F, SR3, SR4, fCIRC, SRTSH, fdegTSH, fLAG, f4, NL;
 
 // scale compartment sizes. in thyrosimIM compartment sizes were all 1. why?
 double p69 = 1; // PV_ratio scalar
@@ -194,17 +195,48 @@ qDot[15] = kdelay*(q[14] - q[15]);                                  // delay3
 qDot[16] = kdelay*(q[15] - q[16]);                                  // delay4
 qDot[17] = kdelay*(q[16] - q[17]);                                  // delay5
 qDot[18] = kdelay*(q[17] - q[18]);                                  // delay6
-    
-// t4_plotter.add_value(t, q1);
-// t3_plotter.add_value(t, q4);
-// tsh_plotter.add_value(t, q7);
+*/
+
+double q4F, q1F, SR3, SR4, fCIRC, SRTSH, fdegTSH, fLAG, f4, NL;
+
+// Auxillary equations
+q1F = (p7 +p8 *q[0]+p9 *Math.pow(q[0],2)+p10*Math.pow(q[0],3))*q[0]; // FT4p
+q4F = (p24+p25*q[0]+p26*Math.pow(q[0],2)+p27*Math.pow(q[0],3))*q[3]; // FT3p
+SR3 = (p19*q[18])*d3; // Brain delay
+SR4 = (p1 *q[18])*d1; // Brain delay
+fCIRC = 1+(p32/(p31*Math.exp(-q[8]))-1)*(1/(1+Math.exp(10*q[8]-55)));
+SRTSH = (p30+p31*fCIRC*Math.sin(Math.PI/12*t-p33))*Math.exp(-q[8]);
+fdegTSH = p34+p35/(p36+q[6]);
+fLAG = p41+2*Math.pow(q[7],11)/(Math.pow(p42,11)+Math.pow(q[7],11));
+f4 = p37+5*p37/(1+Math.exp(2*q[7]-7));
+NL = p13/(p14+q[1]);
+
+// ODEs
+qDot[0] = SR4+p3*q[1]+p4*q[2]-(p5+p6)*q1F+p11*q[10]+u1;            // T4dot
+qDot[1] = p6*q1F-(p3+p12+NL)*q[1];                                 // T4fast
+qDot[2] = p5*q1F-(p4+p15/(p16+q[2])+p17/(p18+q[2]))*q[2];          // T4slow
+qDot[3] = SR3+p20*q[4]+p21*q[5]-(p22+p23)*q4F+p28*q[12]+u4;        // T3pdot
+qDot[4] = p23*q4F+NL*q[1]-(p20+p29)*q[4];                          // T3fast
+qDot[5] = p22*q4F+p15*q[2]/(p16+q[2])+p17*q[2]/(p18+q[2])-p21*q[5];// T3slow
+qDot[6] = SRTSH-fdegTSH*q[6];                                      // TSHp
+qDot[7] = f4/p38*q[0]+p37/p39*q[3]-p40*q[7];                       // T3B
+qDot[8] = fLAG*(q[7]-q[8]);                                        // T3B LAG
+qDot[9] = -p43*q[9];                                               // T4PILLdot
+qDot[10]=  p43*q[9]-(p44+p11)*q[10];                               // T4GUTdot
+qDot[11]= -p45*q[11];                                              // T3PILLdot
+qDot[12]=  p45*q[11]-(p46+p28)*q[12];                              // T3GUTdot
+
+// Delay ODEs
+qDot[13] = -kdelay*q[13] +q[6];                                    // delay1
+qDot[14] = kdelay*(q[13] -q[14]);                                  // delay2
+qDot[15] = kdelay*(q[14] -q[15]);                                  // delay3
+qDot[16] = kdelay*(q[15] -q[16]);                                  // delay4
+qDot[17] = kdelay*(q[16] -q[17]);                                  // delay5
+qDot[18] = kdelay*(q[17] -q[18]);                                  // delay6
 
     }
 
     public void plot_all(){
-        // Very iffy about this code
-        // IAN PLEASE TELL ME HOW TO DEAL WITH PLOT OUTPUT
-
         t4_plotter.plot();
         t3_plotter.plot();
         tsh_plotter.plot();
@@ -330,8 +362,8 @@ qDot[18] = kdelay*(q[17] - q[18]);                                  // delay6
                     System.out.println(getLine(t,y,p));
                 }
 
-                ode.t4_plotter.add_value(t, y[0]);
-                ode.t3_plotter.add_value(t, y[3]);
+                ode.t4_plotter.add_value(t, y[0] * 100);
+                ode.t3_plotter.add_value(t, y[3] * 100);
                 ode.tsh_plotter.add_value(t, y[6]);
             }
         };
@@ -341,10 +373,6 @@ qDot[18] = kdelay*(q[17] - q[18]);                                  // delay6
         FirstOrderIntegrator foi = new DormandPrince853Integrator(o[0],o[1],o[2],o[3]);
         foi.addStepHandler(stepHandler);
         foi.integrate(ode,t1,q,t2,q);
-
-        // ode.t4_plotter.add_value(t2, q[0]);
-        // ode.t3_plotter.add_value(t2, q[3]);
-        // ode.tsh_plotter.add_value(t2, q[6]);
 
         ode.plot_all();
         System.out.println(q.length);
