@@ -3,6 +3,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Properties;
 
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
@@ -235,6 +236,72 @@ qDot[18] = kdelay*(q[17] - q[18]);                                  // delay6
 
     }
 
+    public static void personalize(boolean sex, double height, double BW){
+        // sex: true = male, false = female
+
+        // 1 - Compute Ideal Sex & Height Dependent Body Weight, iBW
+        double iBW, delta_iBW, HEM, Vb, Vp, Vp_new, Vpref, Vtsh_new, k05_new;
+        if(sex){
+            iBW = 176.3 - 220.6 * height + 93.5 * Math.pow(height, 2);
+            HEM = 0.45;
+        }
+        else{
+            iBW = 145.8 - 182.7 * height + 79.55 * Math.pow(height, 2);
+            HEM = 0.4;
+        }
+        
+        // 2 - Compute Patient-Specific % Deviation from iBWg , ∆iBW
+        delta_iBW = 100 * (BW - iBW) / iBW;
+        
+        // 3 - Compute Patient-Specific Blood Volume, Vb
+        double a = 1.27;
+        double n = 0.373;
+        Vb = a*Math.pow(100+delta_iBW, n-1)*BW;
+
+        // 4 - Compute Patient-Specific Blood Plasma Volume, Vp
+        Vp = Vb * (1 - HEM);
+
+        // 5 - Rescale VP (i.e., Compute VP,new)
+        // BW = BMI * H^2
+        // BW_Mref = 21.8 * (1.76)^2 = 67.52768
+        // BW_Fref = 23 * (1.67)^2 = 64.1447
+        double BW_Mref = 67.52768, BW_Fref = 64.1447;
+        //      Male
+        // iBW = 176.3 - 220.6(1.76) + 93.5(1.76)^2 == 77.6696
+        // delta_iBW = 100 * (BW_Mref - iBW) / iBW = -13.0577729253
+        // Vb = 1.27(100 + delta_iBW)^(0.373-1) * BW_Mref = 5.21660391812
+        // Vm_pref = Vb(1-0.45) = 2.86913215497
+
+        //      Female
+        // iBW = 145.8 - 182.7(1.67) + 79.55(1.67^2) = 62.547995
+        // delta_iBW = 100 * (BW_Fref - iBW) / iBW = 2.55276767864
+        // Vb = 1.27(100 + delta_iBW)^(0.373-1) * BW_Fref = 4.46786959281
+        // Vf_pref = Vb(1 - 0.4) = 2.68072175569
+
+        // Vpref = (Vm_pref + Vf_pref) / 2
+
+        Vpref = 2.77492695533;
+
+        // waiting on Karim to point us to reference BWs
+        Vp_new = (3.2*Vp)/Vpref;
+        
+        // 6 - Compute Patient-Specific TSH Distribution Volume, Vtsh
+        Vtsh_new = 5.2 + (Vp_new - 3.2);
+
+        // 7 - Compute Patient-Specific T3 Clearance Rate, k05_new
+        double Cm = 1.05, k05 = 0.185;
+        if(sex){
+            k05_new = Cm * k05 * Math.pow((BW / BW_Mref), 0.75);
+        }
+        else{
+            k05_new = k05 * Math.pow(BW / BW_Fref, 0.75);
+        }
+
+        // prints the 3 values
+        double[] newVals = new double[] {Vp_new, Vtsh_new, k05_new};
+        System.out.println(Arrays.toString(newVals));
+    }
+
     public void plot_all(){
         t4_plotter.plot();
         t3_plotter.plot();
@@ -375,6 +442,7 @@ qDot[18] = kdelay*(q[17] - q[18]);                                  // delay6
 
         ode.plot_all();
         System.out.println(q.length);
+        personalize(true, 1.0, 1.0);
 
         // There are other integrators, e.g., GraggBulirschStoerIntegrator
     }
