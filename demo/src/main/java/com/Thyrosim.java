@@ -159,6 +159,7 @@ SR3 = (p19 * q[18]) * d3; // Brain delay
 SR4 = (p1 * q[18]) * d1; // Brain delay
 fCIRC = T3Blagtonhilleire / ((T3Blagtonhilleire + Math.pow(p49, p51)));
 SRTSH = (p30 + p31 * fCIRC * Math.sin(Math.PI * t / 12 - p33)) * (KSR_tshmhillTSH / (KSR_tshmhillTSH + Math.pow(q[8], p52)));
+// System.out.println(p31);
 fdegTSH = p34 + p35/(p36 + q7);
 fLAG = p41 + 2 * TwoT3B11/(Math.pow(p42,11) + TwoT3B11);
 f4 = p37 * (1 + 5 * (Kf4lhillf3) / (Kf4lhillf3 + Math.pow(q[7], p54)));
@@ -428,8 +429,8 @@ qDot[18] = kdelay*(q[17] - q[18]);                                  // delay6
                     System.out.println(getLine(t,y,p));
                 }
 
-                ode.t4_plotter.add_value(t, y[0] * 777/_p47);// 100 * 2.375); // 5 * 0.475
-                ode.t3_plotter.add_value(t, y[3] * 651/_p47);// 100 * 2.03125); // 5 * 0.40625
+                ode.t4_plotter.add_value(t, y[0] * 777/_p47);
+                ode.t3_plotter.add_value(t, y[3] * 651/_p47);
                 ode.tsh_plotter.add_value(t, y[6] * 5.6/_p48);
             }
         };
@@ -441,7 +442,7 @@ qDot[18] = kdelay*(q[17] - q[18]);                                  // delay6
         foi.integrate(ode,t1,q,t2,q);
 
         ode.plot_all();
-        System.out.println(q.length);
+        // System.out.println(q.length);
         personalize(true, 1.0, 1.0);
 
         // There are other integrators, e.g., GraggBulirschStoerIntegrator
