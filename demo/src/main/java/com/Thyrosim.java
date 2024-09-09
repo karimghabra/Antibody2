@@ -103,9 +103,9 @@ public class Thyrosim implements FirstOrderDifferentialEquations
         p44 = p44 * d2;
         p46 = p46 * d4;
 
-        t4_plotter = new Plotter("T4", "hours", "micrograms/L");
-        t3_plotter = new Plotter("T3", "hours", "micrograms/L");
-        tsh_plotter = new Plotter("TSH", "hours", "milliunits/L");
+        t4_plotter = new Plotter("T4", "days", "micrograms/L");
+        t3_plotter = new Plotter("T3", "days", "micrograms/L");
+        tsh_plotter = new Plotter("TSH", "days", "milliunits/L");
     }
 
     public int getDimension()
@@ -158,7 +158,7 @@ q1F = (p7 + p8 * q1 + p9 * q1Squared + p10 * q1Cubed) * q1; // FT4p
 SR3 = (p19 * q[18]) * d3; // Brain delay
 SR4 = (p1 * q[18]) * d1; // Brain delay
 fCIRC = T3Blagtonhilleire / ((T3Blagtonhilleire + Math.pow(p49, p51)));
-SRTSH = (p30 + p31 * fCIRC * Math.sin(Math.PI * t / 12 - p33)) * (KSR_tshmhillTSH / (KSR_tshmhillTSH + Math.pow(q[8], p52)));
+SRTSH = (p30 + p31 * fCIRC * Math.sin(2 * Math.PI * t - p33)) * (KSR_tshmhillTSH / (KSR_tshmhillTSH + Math.pow(q[8], p52)));
 // System.out.println(p31);
 fdegTSH = p34 + p35/(p36 + q7);
 fLAG = p41 + 2 * TwoT3B11/(Math.pow(p42,11) + TwoT3B11);

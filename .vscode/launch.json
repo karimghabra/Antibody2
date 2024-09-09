@@ -14,9 +14,21 @@
             "type": "java",
             "name": "Thyrosim",
             "request": "launch",
+
+
+            // IC1 = T4p, IC2 = T4fast, IC3 = T4slow, IC4 = T3p, IC5 = T3fast, IC6 = T3Slow, IC7 = TSHp, IC8 = T3B, IC9 = T3B_lag, IC10 = T4PILLdot, IC11 = T4GUTdot, IC12 = T3PILLdot, IC13 = T3GUTdot
+            //              IC1               IC2                IC3                IC4                   IC5                   IC6                IC7              IC8                 IC9   IC10  11 12 13     IC14                 IC15              IC16              IC17              IC18             IC19
             "args": [0.322114215761171, 0.201296960359917, 0.638967411907560, 0.00663104034826483, 0.0112595761822961, 0.0652960640300348, 1.78829584764370, 7.05727560072869, 7.05714474742141, 0, 0, 0, 0, 3.34289716182018, 3.69277248068433, 3.87942133769244, 3.90061903207543, 3.77875734283571, 3.55364471589659,
-            0, 1200, 1, 0.88, 1, 0.88, 0, 0, "Thyrosim", "AnyString",
-            0.625, 0.00277, 8, 0.868, 0.108, 584, 1503, 0.000289, 0.000214, 0.000128, -0.00000883, 0.88, 0.0189, 0.0121, 2.85, 0.000663, 95, 0.00074, 0.075, 0.00033572, 5.37, 0.0689, 127, 2043, 0.00395, 0.00185, 0.00061, -0.000505, 0.88, 0.18497, 450, 219.7, 0, -3.71, 0.53, 0.226, 23, 0.05878, 0.29, 0.006, 0.037, 0.0034, 5, 1.3, 0.12, 1.78, 0.12, 3.2, 5.2
+            //t1d = start time of simulation, t2d = end time of simulation
+            //d1 = t4 secretion, d2 = t4 excretion, d3 = t3 secretion, d4 = t3 excretion
+         //t1d t2d  dial1 d2 d3   d4 inf1 inf4  thysim     initic
+            0, 50, 1, 0.88, 1, 0.88, 0, 0, "Thyrosim", "AnyString",
+            //kdelay
+            15.000015,
+            // S4      tau          k12     k13  k31free k21free   A         B         C          D     k4absorb  k02   VmaxD1fast *  VmaxD1slow  ** VmaxD2slow ***     S3        k45     k46 k64free k54free   a        b        c         d    k3absorb   k05    Bzero  Azero Amax   phi     ****  VmaxTSH K50TSH k3    T4P-EU T3p-EU KdegT3B ***** KLAG ~     ~~   ~~~    ~~~~  Vp   VTSH
+            1.13016, 0.3333333333, 20.832, 2.592, 14016, 36072, 0.000289, 0.000214, 0.000128, -0.00000883, 21.12, 0.4536, 0.2904, 2.85, 0.015912, 95, 0.01776, 0.075, 0.137088, 128.88, 1.6536, 3048, 49032, 0.00395, 0.00185, 0.00061, -0.000505, 21.12, 4.43928, 10800, 5272.8, 0, -0.154583, 12.72, 5.424, 23, 1.41072, 0.29, 0.006, 0.888, 0.0816, 5, 31.2, 2.88, 42.72, 2.88, 3.2, 5.2
+            // * = KmD1fast, ** = KmD1slow, *** = KmD2slow, **** = kdegTSH-HYPO, ***** = KLAG-HYPO
+            // ~ = k4dissolve, ~~ = k4excrete. ~~~ = k3dissolve, ~~~~ = k3excrete
             ],
             
             "mainClass": "com.Thyrosim",
