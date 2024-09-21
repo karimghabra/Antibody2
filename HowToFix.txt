@@ -1,1 +1,2 @@
+Open ANTIBODY2 in VSCode
 Press "Ctrl + Shift + P", choose "java : Clean java Language Server workspace".
