@@ -22,7 +22,7 @@ public class Thyrosim implements FirstOrderDifferentialEquations
     public double p41, p42, p43, p44, p45, p46, p47, p48;
     private double kdelay, u1, u4, d1, d2, d3, d4;
 
-    public Plotter t4_plotter, t3_plotter, tsh_plotter;
+    public Plotter t4_plotter, t3_plotter, tsh_plotter, ft4_plotter, ft3_plotter;
 
     // Functions that Java ODE solver needs
     // Declare parameters
@@ -106,6 +106,9 @@ public class Thyrosim implements FirstOrderDifferentialEquations
         t4_plotter = new Plotter("T4", "days", "micrograms/L");
         t3_plotter = new Plotter("T3", "days", "micrograms/L");
         tsh_plotter = new Plotter("TSH", "days", "milliunits/L");
+        ft4_plotter = new Plotter("FT4", "days", "nanograms/L");
+        ft3_plotter = new Plotter("FT3", "days", "nanograms/L");
+
     }
 
     public int getDimension()
@@ -307,6 +310,8 @@ qDot[18] = kdelay*(q[17] - q[18]);                                  // delay6
         t4_plotter.plot();
         t3_plotter.plot();
         tsh_plotter.plot();
+        ft4_plotter.plot();
+        ft3_plotter.plot();
     }
 
     public static void main(String[] args)
@@ -428,10 +433,13 @@ qDot[18] = kdelay*(q[17] - q[18]);                                  // delay6
                 } else { // Print everything
                     System.out.println(getLine(t,y,p));
                 }
-
-                ode.t4_plotter.add_value(t, 0.45 * y[0] * 777/_p47);
-                ode.t3_plotter.add_value(t, 0.5 * y[3] * 651/_p47);
+                double y0Squared = Math.pow(y[0], 2);
+                double y0Cubed = Math.pow(y[0], 3);
+                ode.t4_plotter.add_value(t, y[0] * 777/_p47);
+                ode.t3_plotter.add_value(t, y[3] * 651/_p47);
                 ode.tsh_plotter.add_value(t, y[6] * 5.6/_p48);
+                ode.ft4_plotter.add_value(t, 0.45 * (p[0]+p[1]*y[0]+p[2]*y0Squared+p[3]*y0Cubed)*y[0] * 777000/3.2);
+                ode.ft3_plotter.add_value(t, 0.5 * (p[4]+p[5]*y[0]+p[6]*y0Squared+p[7]*y0Cubed)*y[3] * 651000/3.2);
             }
         };
 
