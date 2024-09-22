@@ -22,7 +22,7 @@
             //t1d = start time of simulation, t2d = end time of simulation
             //d1 = t4 secretion, d2 = t4 excretion, d3 = t3 secretion, d4 = t3 excretion
          //t1d t2d  dial1 d2 d3   d4 inf1 inf4  thysim     initic
-            0, 50, 1, 0.88, 1, 0.88, 0, 0, "Thyrosim", "AnyString",
+            0, 300, 1, 0.88, 1, 0.88, 0, 0, "Thyrosim", "AnyString",
             //kdelay
             15.000015,
             // S4      tau          k12     k13  k31free k21free   A         B         C          D     k4absorb  k02   VmaxD1fast *  VmaxD1slow  ** VmaxD2slow ***     S3        k45     k46 k64free k54free   a        b        c         d    k3absorb   k05    Bzero  Azero Amax   phi     ****  VmaxTSH K50TSH k3    T4P-EU T3p-EU KdegT3B ***** KLAG ~     ~~   ~~~    ~~~~  Vp   VTSH
