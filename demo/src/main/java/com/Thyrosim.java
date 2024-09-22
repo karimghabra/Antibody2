@@ -461,8 +461,8 @@ qDot[18] = kdelay*(q[17] - q[18]);                                  // delay6
         }
         double y0Squared = Math.pow(y[0], 2);
         double y0Cubed = Math.pow(y[0], 3);
-        double ft4 = (p[0]+p[1]*y[0]+p[2]*y0Squared+p[3]*y0Cubed)*y[0];
-        double ft3 = (p[4]+p[5]*y[0]+p[6]*y0Squared+p[7]*y0Cubed)*y[3];
+        double ft4 = 0.45 * (p[0]+p[1]*y[0]+p[2]*y0Squared+p[3]*y0Cubed)*y[0];
+        double ft3 = 0.5 * (p[4]+p[5]*y[0]+p[6]*y0Squared+p[7]*y0Cubed)*y[3];
         sb.append(Double.toString(ft4)+" ");
         sb.append(Double.toString(ft3)+" ");
         return sb.toString();
